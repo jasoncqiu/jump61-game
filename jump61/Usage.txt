@@ -1,0 +1,2 @@
+Usage: java jump61.Main
+This program does not support a GUI, so it does not accept arguments.

@@ -1,0 +1,190 @@
+package jump61;
+
+
+import static jump61.Color.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+/** A Jump61 board state.
+ *  @author Jason Qiu
+ */
+class MutableBoard extends Board {
+
+    /** An N x N board in initial configuration. */
+    MutableBoard(int N) {
+        _N = N;
+        _colors = new Color[N][N];
+        for (Color[] arr : _colors) {
+            Arrays.fill(arr, WHITE);
+        }
+        _spots = new int[N][N];
+        _moves = 0;
+    }
+
+    /** A board whose initial contents are copied from BOARD0. Clears the
+     *  undo history. */
+    MutableBoard(Board board0) {
+        copy(board0);
+    }
+
+    @Override
+    void clear(int N) {
+        _colors = new Color[N][N];
+        for (Color[] arr : _colors) {
+            Arrays.fill(arr, WHITE);
+        }
+        _spots = new int[N][N];
+        _N = N;
+        _moves = 0;
+        _history.clear();
+    }
+
+    @Override
+    void copy(Board board) {
+        _N = board.size();
+        _colors = new Color[_N][_N];
+        _spots = new int[_N][_N];
+        for (int i = 0; i < _N * _N; i += 1) {
+            int r = row(i);
+            int c = col(i);
+            _colors[r - 1][c - 1] = board.color(i);
+            _spots[r - 1][c - 1] = board.spots(i);
+        }
+        _moves = board.numMoves();
+    }
+
+    @Override
+    int size() {
+        return _N;
+    }
+
+    @Override
+    int spots(int r, int c) {
+        return _spots[r - 1][c - 1];
+    }
+
+    @Override
+    int spots(int n) {
+        return spots(row(n), col(n));
+    }
+
+    @Override
+    Color color(int r, int c) {
+        return _colors[r - 1][c - 1];
+    }
+
+    @Override
+    Color color(int n) {
+        return color(row(n), col(n));
+    }
+
+    @Override
+    int numMoves() {
+        return _moves;
+    }
+
+    @Override
+    int numOfColor(Color color) {
+        int count = 0;
+        for (Color[] arr : _colors) {
+            for (Color c : arr) {
+                if (c == color) {
+                    count += 1;
+                }
+            }
+        }
+        return count;
+    }
+
+    @Override
+    void addSpot(Color player, int r, int c) {
+        _history.add(new MutableBoard(this));
+        _moves += 1;
+        _spots[r - 1][c - 1] += 1;
+        _colors[r - 1][c - 1] = player;
+        jump(sqNum(r, c));
+    }
+
+    @Override
+    void addSpot(Color player, int n) {
+        addSpot(player, row(n), col(n));
+    }
+
+    @Override
+    void set(int r, int c, int num, Color player) {
+        _spots[r - 1][c - 1] = num;
+        if (num > 0) {
+            _colors[r - 1][c - 1] = player;
+        } else {
+            _colors[r - 1][c - 1] = WHITE;
+        }
+        _history.clear();
+    }
+
+    @Override
+    void set(int n, int num, Color player) {
+        set(row(n), col(n), num, player);
+    }
+
+    @Override
+    void setMoves(int num) {
+        assert num > 0;
+        _moves = num;
+        _history.clear();
+    }
+
+    @Override
+    void undo() {
+        if (!_history.isEmpty()) {
+            this.copy(_history.remove(_history.size() - 1));
+        }
+    }
+
+    /** Do all jumping on this board, assuming that initially, S is the only
+     *  square that might be over-full. */
+    private void jump(int S) {
+        if (getWinner() != null) {
+            gameOver = true;
+        }
+        if (!gameOver) {
+            int r = row(S);
+            int c = col(S);
+            if (_spots[r - 1][c - 1] > neighbors(r, c)) {
+                _spots[r - 1][c - 1] -= neighbors(r, c);
+                if (exists(r - 1, c)) {
+                    _spots[r - 2][c - 1] += 1;
+                    _colors[r - 2][c - 1] = _colors[r - 1][c - 1];
+                    jump(sqNum(r - 1, c));
+                }
+                if (exists(r + 1, c)) {
+                    _spots[r][c - 1] += 1;
+                    _colors[r][c - 1] = _colors[r - 1][c - 1];
+                    jump(sqNum(r + 1, c));
+                }
+                if (exists(r, c - 1)) {
+                    _spots[r - 1][c - 2] += 1;
+                    _colors[r - 1][c - 2] = _colors[r - 1][c - 1];
+                    jump(sqNum(r, c - 1));
+                }
+                if (exists(r, c + 1)) {
+                    _spots[r - 1][c] += 1;
+                    _colors[r - 1][c] = _colors[r - 1][c - 1];
+                    jump(sqNum(r, c + 1));
+                }
+            }
+        }
+    }
+
+    protected boolean gameOver = false;
+    /** Total combined number of moves by both sides. */
+    protected int _moves;
+    /** Convenience variable: size of board (squares along one edge). */
+    protected int _N;
+    /** The color of each square. */
+    protected Color[][] _colors;
+    /** The spots of each square. */
+    protected int[][] _spots;
+    /** Board state after every move. */
+    protected ArrayList<Board> _history = new ArrayList<Board>();
+
+}
