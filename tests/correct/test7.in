@@ -1,0 +1,15 @@
+java -ea jump61.Main
+java -ea jump61.Main
+===#1===
+size 2
+auto red
+manual blue
+start
+%mr
+%ib...
+quit
+===#2===
+size 2
+start
+%ir...
+quit

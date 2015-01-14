@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path=""/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="C:/Users/Jason Qiu/Desktop/School 2013-2014/CS61B/proj1/lib/ucb.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jason Qiu/Desktop/School 2013-2014/CS61B/proj1/lib/junit.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Jason Qiu/Desktop/School 2013-2014/CS61B/proj1/lib/hamcrest-core.jar"/>
+	<classpathentry kind="output" path=""/>
+</classpath>

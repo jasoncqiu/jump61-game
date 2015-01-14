@@ -1,0 +1,10 @@
+java -ea jump61.Main
+None
+===#1===
+size 1
+start
+1 1
+%er
+dump
+quit
+===#2===
